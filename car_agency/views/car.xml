@@ -173,7 +173,7 @@
         <field name="name">company.car.kanban.view</field>
         <field name="model">company.car</field>
         <field name="arch" type="xml">
-            <kanban>
+            <kanban default_group_by="agency_id" sample="1">
                 <field name="ref"/>
                 <field name="name"/>
                 <field name="agency_id"/>
@@ -249,7 +249,7 @@
             name="Car"
             parent="menu_agency_root"
             action="action_company_car"
-            sequence="2"
+            sequence="1"
     />
 
 </odoo>
