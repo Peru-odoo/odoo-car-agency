@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_hospital_patient_form">
+        <field name="name">hospital.patient.form</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button class="btn-primary" name="print_patient_report" type="object"
+                            string="Print Patient report"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done,paid"
+                           options="{'clickable':1}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class=" text-center custom-button"  type="object" name="action_view_appointments" icon="fa-star">
+                            <field string="Appointment" name="appointment_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_titel">
+                        <h1>
+                            <field name="ref" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_image" widget="image"
+                                   style="max-width: 200px; max-height: 200px;  margin-left:100px"/>
+                        </group>
+                    </group>
+                    <group string="" style="margin-top: 25px">
+                        <group string="Patient Profile">
+                            <field name="name"/>
+                            <field name="id"/>
+                            <field name="gender" widget="selection"/>
+                            <field name="age"/>
+                            <field name="is_child"/>
+                        </group>
+                        <group string="Patient Information">
+                            <field name="capitalized_name"/>
+                            <field name="address"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="website" widget="url"/>
+                        </group>
+                        <notebook>
+                            <page string="Appointment Info">
+                                <group>
+                                    <field name="doctors_id" options="{'no_create': True}"/>
+                                    <field name="last_appointment" />
+                                    <field name="previous_appointment" />
+                                    <field name="appointment_count" readonly="1" style="margin-bottom:20px;"/>
+                                    <field name="appointment_ids"/>
+                                </group>
+                            </page>
+                            <page string="Notes">
+                                <group>
+                                    <field name="notes"/>
+                                </group>
+                            </page>
+                        </notebook>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_hospital_patient_tree">
+        <field name="name">hospital.patient.tree</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="is_child" decoration-danger="not is_child">
+                <field name="ref"/>
+                <field name="name"/>
+                <field name="age"/>
+                <field name="is_child"/>
+                <field name="gender" optional="1"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_hospital_patient_search">
+        <field name="name">hospital.patient.search</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('ref','ilike', self)]"/>
+                <field name="age"/>
+                <field name="gender"/>
+
+                <filter name="filter_male" string="Male" domain="[('gender', '=', 'male')]"/>
+                <filter name="filter_Female" string="Female" domain="[('gender', '=', 'female')]"/>
+                <filter name="filter_others" string="Others" domain="[('gender', '=', 'others')]"/>
+                <separator/>
+                <filter name="filter_childs" string="Childs" domain="[('is_child', '=', True)]"/>
+                <separator/>
+                <filter name="achived" string="Archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_gender" string="Gender" context="{'group_by':'gender'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="hospital_patient_kanban_view">
+        <field name="name">hospital.patient.kanban.view</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="patient_image"/>
+                <field name="ref"/>
+                <field name="gender"/>
+                <field name="id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_file d-flex align-items-center">
+                            <!-- Image container -->
+                            <div class="oe_module_vignette mr-3 ">
+                                <img t-att-src="kanban_image('hospital.patient', 'patient_image', record.id.raw_value)"
+                                     style="max-width: 100px; max-height: 100px; border-radius: 15px 50px 30px; " t-att-alt="record.name.raw_value"/>
+                            </div>
+                            <!-- Text container -->
+                            <div class="oe_kanban_details" style="margin-left:10px;">
+                                <strong>
+                                    <span t-esc="record.name.raw_value"/>
+                                </strong>
+                                <ul>
+                                    <li>Reference:
+                                        <span t-esc="record.ref.raw_value"/>
+                                    </li>
+                                    <li>Gender:
+                                        <span t-esc="record.gender.raw_value"/>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="hospital_patient_calender_view" model="ir.ui.view">
+        <field name="name">hospital.patient.view</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <calendar date_start="last_appointment" date_stop="previous_appointment" color="id">
+                <field name="name"/>
+                <field name="ref"/>
+                <field name="gender"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="action_hospital_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.patient</field>
+        <field name="view_mode">kanban,tree,form,calendar</field>
+        <field name="search_view_id" ref="om_hospital.view_hospital_patient_search"/>
+    </record>
+
+    <menuitem
+            id="menu_patients"
+            name="Patients"
+            parent="menu_hospital_operations"
+            action="action_hospital_patient"
+            sequence="10"
+    />
+
+</odoo>

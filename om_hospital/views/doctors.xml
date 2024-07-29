@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_hospital_doctors_form">
+        <field name="name">hospital.doctors.form</field>
+        <field name="model">hospital.doctors</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_titel">
+                        <h1>
+                            <field name="ref" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Doctor's Information">
+                            <field name="active" invisible="1"/>
+                            <field name="name"/>
+                            <field name="lid"/>
+                            <field name="age"/>
+                            <field name="gender"/>
+                        </group>
+                        <group string="Tags">
+                            <field name="tag_ids" widget="many2many_checkboxes"/>
+                        </group>
+
+
+                    </group>
+                    <notebook>
+                        <page name="Patients">
+                            <field name="patient_ids">
+                                <tree>
+                                    <field name="ref"/>
+                                    <field name="name"/>
+                                    <field name="age"/>
+                                    <field name="gender" optional="1"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group string="General">
+                                            <field name="ref"/>
+                                            <field name="name"/>
+                                        </group>
+                                        <group string="Specific">
+                                            <field name="age"/>
+                                            <field name="gender"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_hospital_doctors_tree">
+        <field name="name">hospital.doctors.tree</field>
+        <field name="model">hospital.doctors</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="ref"/>
+                <field name="lid"/>
+                <field name="name"/>
+                <field name="age"/>
+                <field name="gender" optional="1"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_hospital_doctors_search">
+        <field name="name">hospital.doctors.search</field>
+        <field name="model">hospital.doctors</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="lid"/>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('ref','ilike', self)]"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <separator/>
+                <filter name="achived" string="Archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="filter_male" string="Male" domain="[('gender', '=', 'male')]"/>
+                <filter name="filter_Female" string="Female" domain="[('gender', '=', 'female')]"/>
+                <filter name="filter_others" string="Others" domain="[('gender', '=', 'others')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_gender" string="Gender" context="{'group_by':'gender'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_hospital_doctors" model="ir.actions.act_window">
+        <field name="name">Doctors</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.doctors</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="om_hospital.view_hospital_doctors_search"/>
+    </record>
+
+    <menuitem
+            id="menu_doctors"
+            name="Doctors"
+            parent="menu_hospital_master_data"
+            action="action_hospital_doctors"
+            sequence="10"
+    />
+
+</odoo>
